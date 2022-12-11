@@ -40,6 +40,36 @@ const displayItem = (item) => {
                 <h5 class="card-title">${strMeal}</h5>
                 <p class="card-text">${strInstructions.slice(0, 80)}</p>
                 <a target="_blank" href="${strYoutube}" class="btn btn-primary">YouTube</a>
+
+            <!-- Modal Button -->
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#id_${idMeal}">
+                Details
+                </button>
+
+                <!-- Modal -->
+                <div class="modal fade" id="id_${idMeal}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="id_${idMeal}Label" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="id_${idMeal}Label">${strMeal}</h5>
+
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <img src="${strMealThumb}" class="card-img-top" alt="${strMeal}">
+                                <p class="card-text">${strInstructions}</p>
+                                <a target="_blank" href="${strYoutube}" class="btn btn-primary">YouTube</a>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button onclick="addToCart('${idMeal}')" id="${idMeal}" class="btn btn-primary" >Add</button>
+                    </div>
+                    </div>
+                </div>
+                </div>
+                <!-- -->
+
+                
               <button onclick="addToCart('${idMeal}')" id="${idMeal}" class="btn btn-primary" >Add</button>
             </div>
         </div>
@@ -53,4 +83,10 @@ const displayItem = (item) => {
 };
 const addToCart = (id) => {
   console.log(id, " => Line No: 55");
+};
+const showModal = (id) => {
+  console.log(id, " => Line No: 61");
+  const modal = `
+
+    `;
 };
