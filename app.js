@@ -78,15 +78,26 @@ const displayItem = (item) => {
     div.appendChild(div2);
   });
   cardWrapper.appendChild(div);
-
-  console.log(item.meals, " => Line No: 25");
 };
-const addToCart = (id) => {
-  console.log(id, " => Line No: 55");
-};
-const showModal = (id) => {
-  console.log(id, " => Line No: 61");
-  const modal = `
 
-    `;
+const addToCart = (mealId) => {
+  //   console.log(mealId, " => Line No: 55");
+  let cart = localStorage.getItem("cart");
+  if (cart) {
+    cart = JSON.parse(cart);
+    const newCart = cart?.totalCart?.find((item) => {
+      return item.mealId == mealId;
+    });
+    if (newCart) {
+      newCart.quantity += 1;
+    } else {
+      cart?.totalCart?.push({ mealId, quantity: 1 });
+    }
+    console.log(newCart, " => Line No: 96");
+    console.log(cart.totalCart, " => Line No: 89");
+  } else {
+    cart = { totalCart: [{ mealId, quantity: 1 }] };
+  }
+  localStorage.setItem("cart", JSON.stringify(cart));
+  console.log(cart, " => Last Line");
 };
