@@ -99,20 +99,51 @@ const addToCart = (mealId) => {
   showStorage();
 };
 
+const removedCart = (mealId) => {
+  let cart = localStorage.getItem("cart");
+  const newArr = [];
+  if (cart) {
+    cart = JSON.parse(cart);
+    const newCart = cart?.totalCart?.find((item) => {
+      return item.mealId == mealId;
+    });
+    if (newCart.quantity > 1) {
+      newCart.quantity -= 1;
+    } else if (newCart.quantity == 1) {
+      newCart.quantity -= 1;
+      cart?.totalCart?.map((item) => {
+        console.log(item, " => Line No: 115");
+        if (item.quantity >= 1) {
+          newArr.push(item);
+        }
+      });
+      console.log(newArr, " => Line No: 119");
+      cart = { totalCart: [...newArr] };
+    }
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }
+  showStorage();
+};
+
 const showStorage = () => {
   const parentDiv = dqs("#cardWrapperSidebar");
   parentDiv.innerHTML = ``;
   let cart = localStorage.getItem("cart");
+  cart = JSON.parse(cart);
   if (cart) {
-    cart = JSON.parse(cart);
-    cart?.totalCart?.map((item, index) => {
-      let div = document.createElement("div");
-      fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${item.mealId}`)
-        .then((r) => r.json())
-        .then((d) => {
-          const { idMeal, strMealThumb, strMeal } = d.meals[0];
-          console.log(cart.totalCart[index].quantity, " => Line No: 116");
-          div.innerHTML = `
+    if (cart?.totalCart?.length === 0) {
+      showEmpty();
+    } else {
+      cart?.totalCart?.map((item, index) => {
+        if (cart.totalCart[index].quantity >= 1) {
+          let div = document.createElement("div");
+          fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${item.mealId}`)
+            .then((r) => r.json())
+            .then((d) => {
+              const { idMeal, strMealThumb, strMeal } = d.meals[0];
+              // console.log(cart.totalCart[index].quantity, " => Line No: 116");
+              div.innerHTML = `
             <div id="meal_${idMeal}" class="card mb-3" style="max-width: 540px">
             <div class="row g-0">
             <div class="col-md-4 d-flex items-center">
@@ -122,21 +153,31 @@ const showStorage = () => {
             <div class="card-body">
             <h5 class="card-title">${strMeal}</h5>
             <h6>Quantity: ${cart.totalCart[index].quantity}</h6>
-            <button>Add</button>
-            <button>Remove</button>
+            <button onclick="addToCart('${idMeal}')" id="${idMeal}" class="btn btn-primary" >Add</button>
+            <button onclick="removedCart('${idMeal}')" id="${idMeal}" class="btn btn-danger" >Remove</button>
+            
             </div>
             </div>
             </div>
             </div>`;
-        });
-      parentDiv.appendChild(div);
-    });
-    // showStorage();
+            });
+          parentDiv.appendChild(div);
+        }
+      });
+    }
   } else {
-    parentDiv.innerHTML = ``;
-    let div = document.createElement("div");
-    div.innerHTML = `<h2>Ops! Nothing was found... </h2> <p>Please Add Some...</p>`;
-    parentDiv.appendChild(div);
+    showEmpty();
   }
 };
+
+const showEmpty = () => {
+  const parentDiv = dqs("#cardWrapperSidebar");
+  let cart = localStorage.getItem("cart");
+  cart = JSON.parse(cart);
+  parentDiv.innerHTML = ``;
+  let div = document.createElement("div");
+  div.innerHTML = `<h2>Ops! Nothing was found... </h2> <p>Please Add Some...</p>`;
+  parentDiv.appendChild(div);
+};
+
 showStorage();
