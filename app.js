@@ -1,5 +1,14 @@
 const dqs = (name) => document.querySelector(name);
+const loader = (data) => {
+  if (data) {
+    dqs("#loading").style.display = "block";
+  } else {
+    dqs("#loading").style.display = "none";
+  }
+};
+loader(true);
 dqs("#searchBtn").addEventListener("click", () => {
+  loader(true);
   const value = dqs("#searchInput").value;
   if (value) {
     if (value.length === 1) {
@@ -20,9 +29,11 @@ dqs("#searchBtn").addEventListener("click", () => {
       }
     }
   }
+  loader(false);
 });
 
 const displayItem = (item) => {
+  loader(true);
   const cardWrapper = dqs("#cardWrapper");
   cardWrapper.innerHTML = "";
   const div = document.createElement("div");
@@ -30,6 +41,15 @@ const displayItem = (item) => {
   div.classList.add("items-center");
   div.classList.add("justify-center");
   div.classList.add("flex-wrap");
+  if (!item.meals) {
+    const div2 = document.createElement("div");
+    const card = `<div class="alert alert-warning" role="alert">
+  Ops!!! Nothing Was Found... Please try again...
+</div>
+        `;
+    div2.innerHTML = card;
+    div.appendChild(div2);
+  }
   item?.meals?.map((item) => {
     const div2 = document.createElement("div");
     const { idMeal, strMeal, strMealThumb, strInstructions, strYoutube } = item;
@@ -78,9 +98,12 @@ const displayItem = (item) => {
     div.appendChild(div2);
   });
   cardWrapper.appendChild(div);
+
+  loader(false);
 };
 
 const addToCart = (mealId) => {
+  loader(true);
   let cart = localStorage.getItem("cart");
   if (cart) {
     cart = JSON.parse(cart);
@@ -97,9 +120,12 @@ const addToCart = (mealId) => {
   }
   localStorage.setItem("cart", JSON.stringify(cart));
   showStorage();
+
+  loader(false);
 };
 
 const removedCart = (mealId) => {
+  loader(true);
   let cart = localStorage.getItem("cart");
   const newArr = [];
   if (cart) {
@@ -112,21 +138,21 @@ const removedCart = (mealId) => {
     } else if (newCart.quantity == 1) {
       newCart.quantity -= 1;
       cart?.totalCart?.map((item) => {
-        console.log(item, " => Line No: 115");
         if (item.quantity >= 1) {
           newArr.push(item);
         }
       });
-      console.log(newArr, " => Line No: 119");
       cart = { totalCart: [...newArr] };
     }
 
     localStorage.setItem("cart", JSON.stringify(cart));
   }
   showStorage();
+  loader(false);
 };
 
 const showStorage = () => {
+  loader(true);
   const parentDiv = dqs("#cardWrapperSidebar");
   parentDiv.innerHTML = ``;
   let cart = localStorage.getItem("cart");
@@ -142,7 +168,6 @@ const showStorage = () => {
             .then((r) => r.json())
             .then((d) => {
               const { idMeal, strMealThumb, strMeal } = d.meals[0];
-              // console.log(cart.totalCart[index].quantity, " => Line No: 116");
               div.innerHTML = `
             <div id="meal_${idMeal}" class="card mb-3" style="max-width: 540px">
             <div class="row g-0">
@@ -168,16 +193,21 @@ const showStorage = () => {
   } else {
     showEmpty();
   }
+
+  loader(false);
 };
 
 const showEmpty = () => {
+  loader(true);
   const parentDiv = dqs("#cardWrapperSidebar");
   let cart = localStorage.getItem("cart");
   cart = JSON.parse(cart);
   parentDiv.innerHTML = ``;
   let div = document.createElement("div");
-  div.innerHTML = `<h2>Ops! Nothing was found... </h2> <p>Please Add Some...</p>`;
+  div.innerHTML = `<h2>Ops! Nothing was Add... </h2> <p>Please Add Some...</p>`;
   parentDiv.appendChild(div);
+  loader(false);
 };
 
 showStorage();
+loader(false);

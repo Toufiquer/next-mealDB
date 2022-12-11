@@ -1,0 +1,16 @@
+#loading {
+  height: 100vh;
+  width: 100%;
+  z-index: 99;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: aliceblue;
+}
+#circle {
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
