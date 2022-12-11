@@ -81,7 +81,6 @@ const displayItem = (item) => {
 };
 
 const addToCart = (mealId) => {
-  //   console.log(mealId, " => Line No: 55");
   let cart = localStorage.getItem("cart");
   if (cart) {
     cart = JSON.parse(cart);
@@ -93,11 +92,51 @@ const addToCart = (mealId) => {
     } else {
       cart?.totalCart?.push({ mealId, quantity: 1 });
     }
-    console.log(newCart, " => Line No: 96");
-    console.log(cart.totalCart, " => Line No: 89");
   } else {
     cart = { totalCart: [{ mealId, quantity: 1 }] };
   }
   localStorage.setItem("cart", JSON.stringify(cart));
-  console.log(cart, " => Last Line");
+  showStorage();
 };
+
+const showStorage = () => {
+  const parentDiv = dqs("#cardWrapperSidebar");
+  parentDiv.innerHTML = ``;
+  let cart = localStorage.getItem("cart");
+  if (cart) {
+    cart = JSON.parse(cart);
+    cart?.totalCart?.map((item, index) => {
+      let div = document.createElement("div");
+      fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${item.mealId}`)
+        .then((r) => r.json())
+        .then((d) => {
+          const { idMeal, strMealThumb, strMeal } = d.meals[0];
+          console.log(cart.totalCart[index].quantity, " => Line No: 116");
+          div.innerHTML = `
+            <div id="meal_${idMeal}" class="card mb-3" style="max-width: 540px">
+            <div class="row g-0">
+            <div class="col-md-4 d-flex items-center">
+            <img src="${strMealThumb}" class="img-fluid rounded-start" alt="${strMeal}" />
+            </div>
+            <div class="col-md-8">
+            <div class="card-body">
+            <h5 class="card-title">${strMeal}</h5>
+            <h6>Quantity: ${cart.totalCart[index].quantity}</h6>
+            <button>Add</button>
+            <button>Remove</button>
+            </div>
+            </div>
+            </div>
+            </div>`;
+        });
+      parentDiv.appendChild(div);
+    });
+    // showStorage();
+  } else {
+    parentDiv.innerHTML = ``;
+    let div = document.createElement("div");
+    div.innerHTML = `<h2>Ops! Nothing was found... </h2> <p>Please Add Some...</p>`;
+    parentDiv.appendChild(div);
+  }
+};
+showStorage();
